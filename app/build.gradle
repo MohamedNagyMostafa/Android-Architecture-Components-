@@ -29,7 +29,8 @@ ext {
             constraint  : "1.1.2",
             unit_test   : "4.12",
             espresso    : "3.0.2",
-            test_running: "1.0.2"
+            test_running: "1.0.2",
+            live_data   : "1.1.1"
     ]
 
     libraries = [
@@ -40,7 +41,9 @@ ext {
             constraint_lib     : "com.android.support.constraint:constraint-layout:$versions.constraint",
             unit_test_lib      : "junit:junit:$versions.unit_test",
             espresso_lib       : "com.android.support.test.espresso:espresso-core:$versions.espresso",
-            test_running_lib   : "com.android.support.test:runner:$versions.test_running"
+            test_running_lib   : "com.android.support.test:runner:$versions.test_running",
+            live_data_lib      : "android.arch.lifecycle:extensions:$versions.live_data",
+            live_data_annotation_lib: "android.arch.lifecycle:compiler:$versions.live_data"
     ]
 }
 
@@ -52,9 +55,13 @@ dependencies {
     implementation libraries.constraint_lib
     implementation libraries.design_lib
     implementation libraries.room_lib
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation libraries.live_data_lib
+
+    annotationProcessor libraries.live_data_annotation_lib
     annotationProcessor libraries.room_annotation_lib
+
     testImplementation libraries.unit_test_lib
+
     androidTestImplementation libraries.test_running_lib
     androidTestImplementation libraries.espresso_lib
 

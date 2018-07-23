@@ -1,12 +1,19 @@
 package com.adja.apps.mohamednagy.androidarch;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
@@ -48,21 +55,34 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, AddNoteActivity.class));
             }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mAppExecutors.diskIO().execute(new Runnable() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void run() {
-                final List<Note> notes = mAppDatabase.noteDao().loadAllNotes();
-                mAppExecutors.mainThread().execute(new Runnable() {
+            public void onItemClick(final AdapterView<?> adapterView, final View view, int i, long l) {
+                mAppExecutors.diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        mNoteAdapter.swapList(notes);
+                        List<Note> notes = mNoteAdapter.getNotes();
+                        int position = adapterView.getPositionForView(view);
+
+                        mAppDatabase.noteDao().deleteNote(notes.get(position));
                     }
                 });
+            }
+        });
+
+        retrieveNotes();
+    }
+
+    private void retrieveNotes(){
+        // Run on Outer Thread by default
+        final LiveData<List<Note>> notes = mAppDatabase.noteDao().loadAllNotes();
+
+        notes.observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(@Nullable List<Note> notes) {
+                // Run in UI Thread by default
+                mNoteAdapter.swapList(notes);
             }
         });
     }

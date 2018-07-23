@@ -63,6 +63,10 @@ public class NoteAdapter extends ArrayAdapter<Note> {
         notifyDataSetChanged();
     }
 
+    public List<Note> getNotes() {
+        return mNotes;
+    }
+
     @Override
     public int getCount() {
         return mNotes == null?0: mNotes.size();

@@ -1,5 +1,6 @@
 package com.adja.apps.mohamednagy.androidarch.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -17,7 +18,9 @@ import java.util.List;
 @Dao
 public interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY  priority")
-    List<Note> loadAllNotes();
+    LiveData<List<Note>> loadAllNotes();
+    @Query("SELECT * FROM notes WHERE id = :id")
+    Note loadNoteById(int id);
     @Insert
     void insertNote(Note note);
     @Delete
