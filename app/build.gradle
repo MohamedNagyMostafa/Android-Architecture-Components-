@@ -17,27 +17,30 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dataBinding.enabled = true
 }
 
-ext{
+ext {
 
-    versions =[
-            room:           "1.1.1",
-            android:        "28.0.0-alpha3",
-            constraint:     "1.1.2",
-            unit_test:      "4.12",
-            espresso:       "3.0.2",
-            test_running:   "1.0.2"
+    versions = [
+            room        : "1.1.1",
+            android     : "28.0.0-alpha1",
+            design      : "28.0.0-alpha1",
+            constraint  : "1.1.2",
+            unit_test   : "4.12",
+            espresso    : "3.0.2",
+            test_running: "1.0.2"
     ]
 
-    libraries =[
-            room_lib:               "android.arch.persistence.room:runtime:$versions.room",
-            room_annotation_lib:    "android.arch.persistence.room:compiler:$versions.room",
-            appcompat_lib:          "com.android.support:appcompat-v7:$versions.android",
-            constraint_lib:         "com.android.support.constraint:constraint-layout:$versions.constraint",
-            unit_test_lib:          "junit:junit:$versions.unit_test",
-            espresso_lib:           "com.android.support.test.espresso:espresso-core:$versions.espresso",
-            test_running_lib:       "com.android.support.test:runner:$versions.test_running"
+    libraries = [
+            room_lib           : "android.arch.persistence.room:runtime:$versions.room",
+            room_annotation_lib: "android.arch.persistence.room:compiler:$versions.room",
+            appcompat_lib      : "com.android.support:appcompat-v7:$versions.android",
+            design_lib         : "com.android.support:design:$versions.design",
+            constraint_lib     : "com.android.support.constraint:constraint-layout:$versions.constraint",
+            unit_test_lib      : "junit:junit:$versions.unit_test",
+            espresso_lib       : "com.android.support.test.espresso:espresso-core:$versions.espresso",
+            test_running_lib   : "com.android.support.test:runner:$versions.test_running"
     ]
 }
 
@@ -45,17 +48,14 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation      libraries.appcompat_lib
-    implementation      libraries.constraint_lib
-    implementation      libraries.room_lib
+    implementation libraries.appcompat_lib
+    implementation libraries.constraint_lib
+    implementation libraries.design_lib
+    implementation libraries.room_lib
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     annotationProcessor libraries.room_annotation_lib
-    testImplementation  libraries.unit_test_lib
+    testImplementation libraries.unit_test_lib
     androidTestImplementation libraries.test_running_lib
     androidTestImplementation libraries.espresso_lib
 
 }
-
-
-
-
-
