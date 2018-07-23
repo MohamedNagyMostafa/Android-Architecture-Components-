@@ -2,6 +2,8 @@ package com.adja.apps.mohamednagy.androidarch;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -22,6 +24,7 @@ import com.adja.apps.mohamednagy.androidarch.database.Note;
 import com.adja.apps.mohamednagy.androidarch.sync.AppExecutors;
 import com.adja.apps.mohamednagy.androidarch.ui.AddNoteActivity;
 import com.adja.apps.mohamednagy.androidarch.ui.NoteAdapter;
+import com.adja.apps.mohamednagy.androidarch.view_model.MainViewModel;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -71,14 +74,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        retrieveNotes();
+        setupViewModel();
     }
 
-    private void retrieveNotes(){
+    private void setupViewModel(){
         // Run on Outer Thread by default
-        final LiveData<List<Note>> notes = mAppDatabase.noteDao().loadAllNotes();
-
-        notes.observe(this, new Observer<List<Note>>() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getNotes().observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(@Nullable List<Note> notes) {
                 // Run in UI Thread by default

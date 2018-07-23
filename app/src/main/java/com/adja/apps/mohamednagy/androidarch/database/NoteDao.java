@@ -20,7 +20,7 @@ public interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY  priority")
     LiveData<List<Note>> loadAllNotes();
     @Query("SELECT * FROM notes WHERE id = :id")
-    Note loadNoteById(int id);
+    LiveData<Note> loadNoteById(int id);
     @Insert
     void insertNote(Note note);
     @Delete
