@@ -14,6 +14,7 @@ import com.adja.apps.mohamednagy.androidarch.R;
 import com.adja.apps.mohamednagy.androidarch.database.AppDatabase;
 import com.adja.apps.mohamednagy.androidarch.database.Note;
 import com.adja.apps.mohamednagy.androidarch.databinding.FragmentAddNoteBinding;
+import com.adja.apps.mohamednagy.androidarch.sync.AppExecutors;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +26,7 @@ import java.util.Objects;
 public class AddNoteActivityFragment extends Fragment {
 
     private AppDatabase mAppDatabase;
+    private AppExecutors mAppExecutors;
     private FragmentAddNoteBinding mFragmentAddNoteBinding;
 
     public AddNoteActivityFragment() {
@@ -36,6 +38,8 @@ public class AddNoteActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_add_note, container, false);
         mFragmentAddNoteBinding = DataBindingUtil.bind(rootView);
         mAppDatabase = AppDatabase.getInstance(getContext());
+        mAppExecutors = AppExecutors.getInstance();
+
         assert mFragmentAddNoteBinding != null;
 
         mFragmentAddNoteBinding.submitButton.setOnClickListener(new View.OnClickListener() {
@@ -48,9 +52,15 @@ public class AddNoteActivityFragment extends Fragment {
                 int priority = mFragmentAddNoteBinding.seekBar.getProgress();
                 Date date = (getCurrentDate());
 
-                Note note = new Note(auth, head, body, date, priority);
+                final Note note = new Note(auth, head, body, date, priority);
 
-                mAppDatabase.noteDao().insertNote(note);
+                mAppExecutors.diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAppDatabase.noteDao().insertNote(note);
+                    }
+                });
+
 
                 close();
             }
