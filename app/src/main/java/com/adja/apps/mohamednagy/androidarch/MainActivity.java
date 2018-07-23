@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import com.adja.apps.mohamednagy.androidarch.database.AppDatabase;
 import com.adja.apps.mohamednagy.androidarch.database.Note;
+import com.adja.apps.mohamednagy.androidarch.sync.AppExecutors;
 import com.adja.apps.mohamednagy.androidarch.ui.AddNoteActivity;
 import com.adja.apps.mohamednagy.androidarch.ui.NoteAdapter;
 
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppDatabase mAppDatabase;
     private NoteAdapter mNoteAdapter;
+    private AppExecutors mAppExecutors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAppDatabase = AppDatabase.getInstance(getApplicationContext());
         mNoteAdapter = new NoteAdapter(this);
+        mAppExecutors = AppExecutors.getInstance();
 
         ListView listView = findViewById(R.id.note_list);
         FloatingActionButton floatingActionButton = findViewById(R.id.add_new_note_btn);
@@ -50,8 +53,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        List<Note> notes = mAppDatabase.noteDao().loadAllNotes();
-        mNoteAdapter.swapList(notes);
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<Note> notes = mAppDatabase.noteDao().loadAllNotes();
+                mAppExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mNoteAdapter.swapList(notes);
+                    }
+                });
+            }
+        });
     }
 
 }
